@@ -3,28 +3,12 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace LinqSamples
+namespace EmployeeProj
 {
     class Program
     {
         static void Main(string[] args)
         {
-            /*
-                string path = "/Users/pedrolopes/Downloads";
-                ShowFiles.WithoutLinq(path);
-                Console.WriteLine(new String('*', 50));
-                ShowFiles.WithLinq(path);
-            */
-
-            Func<int, int> square = x => x * x;
-            Func<int, int, int> add = (x, y) =>
-            {
-                int sum = x + y;
-                return sum;
-            };
-            Action<int> write = x => Console.WriteLine(x);
-
-            write(square(add(3, 5)));
 
             var developers = new Employee[]
             {

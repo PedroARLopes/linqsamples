@@ -1,4 +1,4 @@
-namespace LinqSamples
+namespace EmployeeProj
 {
     public class Employee
     {
