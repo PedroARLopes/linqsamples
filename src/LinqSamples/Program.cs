@@ -1,7 +1,6 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
-using System.IO;
 using System.Linq;
 
 namespace LinqSamples
@@ -10,49 +9,44 @@ namespace LinqSamples
     {
         static void Main(string[] args)
         {
-            string path = "/Users/pedrolopes/Downloads";
-            ShowLargeFilesWithoutLinq(path);
-            Console.WriteLine(new String('*', 50));
-            ShowLargeFilesWithLinq(path);
-        }
+            /*
+                string path = "/Users/pedrolopes/Downloads";
+                ShowFiles.WithoutLinq(path);
+                Console.WriteLine(new String('*', 50));
+                ShowFiles.WithLinq(path);
+            */
 
-        private static void ShowLargeFilesWithLinq(string path)
-        {
-            Console.WriteLine("LINQ SQL like query");
-            var query = from file in new DirectoryInfo(path).GetFiles()
-                        orderby file.Length descending
-                        select file;
-
-            foreach (var file in query.Take(5))
-                Console.WriteLine($"{file.Name,-35} : {file.Length:N0}");
-
-            Console.WriteLine(new String('*', 50));
-            Console.WriteLine("LINQ method chain query");
-            var query2 = new DirectoryInfo(path).GetFiles().OrderByDescending(f => f.Length).Take(5);
-            foreach (var file in query2)
-                Console.WriteLine($"{file.Name,-35} : {file.Length:N0}");
-        }
-
-        private static void ShowLargeFilesWithoutLinq(string path)
-        {
-            Console.WriteLine("Standard way without LINQ");
-            DirectoryInfo directory = new DirectoryInfo(path);
-            FileInfo[] files = directory.GetFiles();
-            Array.Sort(files, new FileInfoComparer());
-
-
-            for (int i = 0; i < 5; i++)
+            Func<int, int> square = x => x * x;
+            Func<int, int, int> add = (x, y) =>
             {
-                Console.WriteLine($"{files[i].Name,-35} : {files[i].Length:N0}");
-            }
-        }
-    }
+                int sum = x + y;
+                return sum;
+            };
+            Action<int> write = x => Console.WriteLine(x);
 
-    public class FileInfoComparer : IComparer<FileInfo>
-    {
-        public int Compare([AllowNull] FileInfo x, [AllowNull] FileInfo y)
-        {
-            return y.Length.CompareTo(x.Length);
+            write(square(add(3, 5)));
+
+            var developers = new Employee[]
+            {
+                new Employee { Id = 1, Name = "Ricky"},
+                new Employee { Id = 2, Name = "Morty"},
+                new Employee { Id = 3, Name = "Sam"}
+            };
+
+            var sales = new List<Employee>()
+            {
+                new Employee { Id = 3, Name = "Summer" }
+            };
+
+            var queryMethod = developers.Where(e => e.Name.Length == 5).OrderBy(e => e.Name).ToList();
+
+            var querySytax = from dev in developers
+                             where dev.Name.Length == 5
+                             orderby dev.Name
+                             select dev;
+
+            foreach (var e in querySytax)
+                Console.WriteLine($"Id:{e.Id}, Name:{e.Name}");
         }
     }
 }
