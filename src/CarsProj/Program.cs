@@ -9,36 +9,58 @@ namespace CarsProj
     {
         static void Main(string[] args)
         {
-            var cars = ProcessFile("fuel.csv");
+            var cars = ProcessCars("fuel.csv");
+            var manufacturers = ProcessManufacturer("manufacturers.csv");
+
             var query = cars.OrderByDescending(c => c.Combined).ThenBy(c => c.Name);
 
             var query2 =
                 from car in cars
-                where car.Manufacturer == "BMW" && car.Year == 2016
+                join manufacturer in manufacturers
+                    on car.Manufacturer equals manufacturer.Name
                 orderby car.Combined descending, car.Name ascending
-                select car;
+                select new
+                {
+                    manufacturer.Headquarters,
+                    car.Name,
+                    car.Combined,
+                };
 
-            // Iterate throught he sequence inside the sequence
-            var result = cars
-            .SelectMany(c => c.Name)
-            .OrderBy(c => c);
+            var query3 =
+                cars.Join(
+                    manufacturers,
+                    c => c.Manufacturer,
+                    m => m.Name,
+                    (c, m) => new
+                    {
+                        m.Headquarters,
+                        c.Name,
+                        c.Combined,
+                    })
+                    .OrderByDescending(c => c.Combined)
+                    .ThenBy(c => c.Name);
 
-            foreach (var name in result)
-            {
-                Console.WriteLine(name);
-            }
-
-            // foreach (var car in query2.Take(10))
-            //     Console.WriteLine($"{car.Name} : {car.Combined}");
+            foreach (var car in query3.Take(10))
+                Console.WriteLine($"{car.Headquarters} : {car.Name} : {car.Combined}");
         }
 
-        private static List<Car> ProcessFile(string path)
+        private static List<Car> ProcessCars(string path)
         {
             return
                 File.ReadAllLines(path)
                 .Skip(1)
                 .Where(l => l.Length > 0)
                 .ToCar()
+                .ToList();
+        }
+
+        private static List<Manufacturer> ProcessManufacturer(string path)
+        {
+            return
+                File.ReadAllLines(path)
+                .Skip(1)
+                .Where(l => l.Length > 0)
+                .ToManufacturer()
                 .ToList();
         }
     }
