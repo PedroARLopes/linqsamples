@@ -11,6 +11,18 @@ namespace CarsProj
         static void Main(string[] args)
         {
             CreateXML();
+            QueryXML();
+        }
+
+        private static void QueryXML()
+        {
+            var document = XDocument.Load("fuel.xml");
+
+            var query = document.Element("Cars").Elements("Car")
+                .Where(e => e.Attribute("Manufacturer").Value == "BMW")
+                .Select(e => e.Attribute("Name").Value);
+
+            query.ToList().ForEach(e => Console.WriteLine(e));
         }
 
         private static void CreateXML()
