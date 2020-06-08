@@ -29,8 +29,10 @@ namespace CarsProj
         {
             var records = ProcessCars("fuel.csv");
 
+            XNamespace ns = "http://pluralsight.com/cars/2016";
+
             var document = new XDocument();
-            var cars = new XElement("Cars", records.Select(record => new XElement("Car",
+            var cars = new XElement(ns + "Cars", records.Select(record => new XElement(ns + "Car",
                    new XAttribute("Name", record.Name),
                    new XAttribute("Combined", record.Combined),
                    new XAttribute("Manufacturer", record.Manufacturer)
