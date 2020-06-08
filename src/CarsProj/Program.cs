@@ -13,18 +13,31 @@ namespace CarsProj
             var manufacturers = ProcessManufacturer("manufacturers.csv");
 
             var query =
-                from car in cars
-                group car by car.Manufacturer.ToUpper() into manufacturer
-                orderby manufacturer.Key
-                select manufacturer;
+                from manufacturer in manufacturers
+                join car in cars on manufacturer.Name equals car.Manufacturer
+                    into carGroup
+                orderby manufacturer.Name
+                select new
+                {
+                    Manufacturer = manufacturer,
+                    Cars = carGroup,
+                };
 
             var query2 =
-                cars.GroupBy(c => c.Manufacturer.ToUpper()).OrderBy(g => g.Key);
+                manufacturers.GroupJoin(
+                    cars,
+                    m => m.Name,
+                    c => c.Manufacturer,
+                    (m, g) => new
+                    {
+                        Manufacturer = m,
+                        Cars = g
+                    }).OrderBy(m => m.Manufacturer.Name);
 
             foreach (var group in query2.Take(10))
             {
-                Console.WriteLine($"Manufacturer: {group.Key} | Car Count: {group.Count()}");
-                foreach (var car in group.OrderByDescending(c => c.Combined).Take(2))
+                Console.WriteLine($"Manufacturer: {group.Manufacturer.Name} | Car Count: {group.Cars.Count()} | Headquarters: {group.Manufacturer.Headquarters}");
+                foreach (var car in group.Cars.OrderByDescending(c => c.Combined).Take(2))
                 {
                     Console.WriteLine($"\tCar: {car.Name} | Combined: {car.Combined}");
                 }
